@@ -17,4 +17,14 @@ cp -r humanizer/humanizer ~/.claude/skills/
 
 Ask Claude something like "pakai skill humanizer", "biar lebih manusiawi", or "make this sound less like AI". You can also run `/humanizer`.
 
+## Audit
+
+The skill ships with `humanizer/scripts/audit.py` (Python 3, no dependencies). It counts stiff or banned words before and after a rewrite and checks that numbers and names survived:
+
+```bash
+python3 ~/.claude/skills/humanizer/scripts/audit.py scan site.html copy.json --out before.json
+python3 ~/.claude/skills/humanizer/scripts/audit.py diff before.json after.json
+python3 ~/.claude/skills/humanizer/scripts/audit.py facts copy.json
+```
+
 See [`humanizer/SKILL.md`](humanizer/SKILL.md) for the full rules.

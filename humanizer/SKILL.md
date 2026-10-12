@@ -23,6 +23,9 @@ Write the way people actually talk and write today: santai tapi sopan, like expl
   - bisa (bukan "dapat"), pakai (bukan "menggunakan" when casual), bikin / membuat (bukan "mengimplementasikan"), cek (bukan "memantau"), punya (bukan "memiliki"), lewat (bukan "melalui"), jalan (bukan "beroperasi")
 - Drop stiff and translated phrasing:
   - "memungkinkan pengguna untuk ...", "sebuah", "berbasis", "dilengkapi dengan", "dalam rangka", "adapun", "merupakan", "perancangan", "penyerahan", "mutakhir", "dipelihara", "kokoh", "lintas platform", "secara efektif dan efisien"
+- Also swap these (found leaking through earlier passes):
+  - "serta" → "dan" · "secara X" → drop it or use the plain adjective · "mengelola" → "atur" / "urus" / the specific verb (catat, hitung, kirim) · "berbasis web/peran" → "web" / "per peran" · "solusi" → what it actually does · "berbagai" → "banyak" or name them · "ditambah" → "dan" / "plus" · "memantau" → "cek" · "dapat" → "bisa" · "demi" → "supaya" · "sistem" / "platform" as filler ("dalam satu sistem") → cut
+  - Stacked prepositions are a translation tell: "sistem untuk mengelola X dengan Y yang Z". Split it into two sentences.
 - First person "saya" for the owner's own work. No "gue/lo" unless asked. Don't overuse "nggak".
 
 ## English
@@ -34,7 +37,7 @@ Write the way people actually talk and write today: santai tapi sopan, like expl
 ## Remove AI-writing patterns (both languages)
 
 - "Not just X, but also Y" / "tidak hanya X, tapi juga Y"
-- Forced lists of three, and adjective stacks
+- Forced lists of three, and adjective stacks. A real list of features, modules or tech names is fine; a decorative triple ("cepat, mudah, dan aman") is not. Keep feature lists, trim adjective ones.
 - Inflated words: pivotal, crucial, comprehensive, significant, optimal, menyeluruh, komprehensif, krusial, signifikan, optimal
 - Em dashes. Use a comma or a full stop.
 - Tail clauses that add vague importance: "..., ensuring X", "..., highlighting Y", "..., sehingga memastikan X"
@@ -43,10 +46,30 @@ Write the way people actually talk and write today: santai tapi sopan, like expl
 - Generic openers and closers ("In today's digital world", "Di era digital ini", "Overall, ...")
 - Every sentence the same length. Mix short and medium.
 
+## CV text
+
+- No pronouns, no "saya" / "I". Bullets start with a past-tense verb (Built, Led, Memimpin, Membuat), one line each.
+- Numbers and tech names stay exactly. No adjectives about yourself ("berpengalaman", "passionate").
+- It must still fit the page after the rewrite. Regenerate the PDF and check.
+
 ## Length and layout
 
 - Shorter wins. Cut filler, keep one idea per sentence.
 - For UI copy, check that new text still fits: no extra lines in a hero, no labels overflowing buttons or cards. If the project can be run, screenshot mobile (390px) and desktop and fix anything that breaks.
+
+## Audit (mandatory when there are more than ~20 strings)
+
+Script: `~/.claude/skills/humanizer/scripts/audit.py` (python3, no dependencies).
+
+1. Before rewriting: `audit.py scan <files> --out before.json`. If the project has `data/audit/baseline-scan.json`, use that as "before".
+2. Rewrite.
+3. After: `audit.py scan <files> --out after.json`, then `audit.py diff before.json after.json`. Banned-word count must go down; report banned per 100 strings before and after.
+4. For key→value copy maps (original → rewrite): `audit.py facts <copy.json>`. Every listed pair lost a number or a name. Fix it or confirm it was meant.
+5. `weak` counts (list3, colon, untuk/dengan/yang, sistem, platform) are watch items, not bans. Use them to find the worst offenders, not to hit zero.
+
+6. Audit the rendered output too, not only the source files. Last time ~100 bullet strings were never touched because the wording layer skipped arrays, and only a scan of the built page (`dist/index.html`) showed it. Scan it with `audit.py scan dist/index.html`, or at least grep it for the banned list.
+
+Known limits: the script cannot judge tone, only patterns. A string with zero hits can still sound stiff, so still do the read-aloud check.
 
 ## Self-check before finishing
 
@@ -57,4 +80,4 @@ Write the way people actually talk and write today: santai tapi sopan, like expl
 ## Output
 
 - When editing files, change the text in place. Do not leave old and new side by side.
-- Report a few before/after examples and anything you were unsure about.
+- Report a few before/after examples, the audit numbers (before → after), and anything you were unsure about.
